@@ -7,6 +7,8 @@ GROQ_API_KEY = "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"
 client = Groq(api_key=GROQ_API_KEY)
 bot = telebot.TeleBot(BOT_TOKEN)
 
+SYSTEM_PROMPT = "Sen o'zbek tilida javob beradigan AI yordamchisan. Har doim o'zbek tilida, aniq va qisqa javob ber."
+
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.reply_to(message, "Salom! Men AI yordamchiman 🤖 Savolingizni yozing!")
@@ -16,7 +18,10 @@ def handle(message):
     try:
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": message.text}]
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": message.text}
+            ]
         )
         bot.reply_to(message, response.choices[0].message.content)
     except Exception as e:
